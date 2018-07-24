@@ -100,7 +100,6 @@ public abstract class RxHttpTask<S> implements IRequestData, RtfServiceHandler<S
 
         retrofit = new Retrofit.Builder()
                 .client(getHttpClient(createCookieStore()))
-                .addConverterFactory(StringableGsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(HOST)
                 .build();

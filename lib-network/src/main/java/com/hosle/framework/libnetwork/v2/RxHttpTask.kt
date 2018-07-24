@@ -12,6 +12,7 @@ import com.hosle.framework.libnetwork.rxretrofit.OnSubscriberListener
 import okhttp3.CookieJar
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
@@ -82,16 +83,6 @@ abstract class RxHttpTask<S,M> : IRequestData<M> {
                 .create(cls)
     }
 
-    fun createService(apiString: String, listener: ResponseBodyStringListener): S {
-        val t = javaClass.genericSuperclass
-        val params = (t as ParameterizedType).actualTypeArguments
-        val cls = params[0] as Class<S>
-
-        return createUrl(apiString)
-                .createRetrofit(listener)
-                .create(cls)
-    }
-
 
     fun getPath(): String {
         return url.substring(HOST!!.length + 1)
@@ -135,18 +126,7 @@ abstract class RxHttpTask<S,M> : IRequestData<M> {
 
         return Retrofit.Builder()
                 .client(HttpClientSingleton.getInstance(createCookieStore()))
-                .addConverterFactory(StringableGsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(HOST!!)
-                .build()
-    }
-
-
-    private fun createRetrofit(listener: ResponseBodyStringListener): Retrofit {
-
-        return Retrofit.Builder()
-                .client(HttpClientSingleton.getInstance(createCookieStore()))
-                .addConverterFactory(StringableGsonConverterFactory.create(listener))
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(HOST!!)
                 .build()
